@@ -13,16 +13,27 @@
     <pre id="output"></pre>
 
     <script>
+        // JavaScript function to fetch data via the Netlify serverless function
         async function fetchProxy() {
             const url = document.getElementById('urlInput').value;
-            const response = await fetch('/.netlify/functions/proxy', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url })
-            });
+            
+            try {
+                const response = await fetch('/.netlify/functions/proxy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
 
-            const data = await response.text();
-            document.getElementById('output').textContent = data;
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+
+                const data = await response.text();
+                document.getElementById('output').textContent = data;
+            } catch (error) {
+                document.getElementById('output').textContent = `Failed to fetch: ${error.message}`;
+                console.error("Error fetching from proxy:", error);
+            }
         }
     </script>
 </body>
